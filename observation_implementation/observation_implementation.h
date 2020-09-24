@@ -142,6 +142,7 @@ convert_to_uv(std::vector<std::string>& spd, std::vector<std::string>& dir);
 std::map<std::string, std::vector<std::string>>
 construct_obs_labels_map();
 
+double UpdateFileDate(double oldDate);
 
 #endif //OBSERVATION_IMPLEMENTATION_H_
 

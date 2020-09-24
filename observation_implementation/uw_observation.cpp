@@ -51,6 +51,9 @@ UWObservation::set_date(const std::string& hour_window1,
   
   date = get_filename(this->filename);
   date = date.substr(9, 8);
+
+  std::cout << hour_window1 << std::endl;
+  std::cout << hour_window2 << std::endl;
   this->ndate = stol((date + hour_window1 + hour_window2));
 
   for(auto const& x : this->data_storage){
@@ -74,7 +77,9 @@ UWObservation::set_date(const std::string& hour_window1,
     std::vector<std::string> new_day(this->obs_count, date);
     this->data_storage.push_back(std::pair<std::string, 
                     std::vector<std::string>>("day", new_day));  
-  } 
+  }
+
+  std::cout << this->ndate << std::endl; 
 }
 
 void
@@ -99,12 +104,19 @@ UWObservation::time_conversion(){
   std::tie(str_hour_window1, str_hour_window2) = 
                determine_hour_windows(start_time, end_time);
 
+  std::cout << "start_time: "  << start_time << std::endl;
+  std::cout << "end_time: " << end_time << std::endl;
+
   double curr_hour_window, new_time;
   std::vector<std::string> time, hour_window;
   for(auto& old_time : hms){
     //calculate deviations function
     std::tie(new_time, curr_hour_window) = calculate_time(old_time);
     time.push_back(std::to_string(new_time));
+
+    //std::cout << "str_hour_window: " << str_hour_window1  <<std::endl;
+    //std::cout << "curr_hour_window: " << curr_hour_window << std::endl;
+
     if(stoi(str_hour_window1) == curr_hour_window){
       hour_window.push_back(str_hour_window1);
     }else{
@@ -115,7 +127,7 @@ UWObservation::time_conversion(){
                     std::vector<std::string>>("time", time));
   this->data_storage.push_back(std::pair<std::string, 
                     std::vector<std::string>>("hour_window", hour_window));
-
+  
   set_date(str_hour_window1, str_hour_window2);
 }
 
@@ -391,7 +403,7 @@ determine_hour_windows(double start_time, double end_time){
   std::string str_hour_window2 = "";
   if( ((start_time <= 300)||(start_time > 2100)) && 
         ((end_time <= 300)||(end_time > 2100)) ){
-     str_hour_window1 = "00";
+      str_hour_window1 = "00";
   }
   if( ((start_time > 300)&&(start_time <= 900)) || 
               ((end_time > 300)&&(end_time <= 900)) ){
@@ -416,6 +428,12 @@ determine_hour_windows(double start_time, double end_time){
      }else{
        str_hour_window2 = "18";
      }
+  }
+
+  //THIS IS PART OF A NEW DAY
+  if( ((start_time > 1500)&&(start_time <= 2100)) &&
+		(str_hour_window1.compare("") != 0 )  ){
+    str_hour_window2 = "00";
   }
 
   if( (!str_hour_window1.compare("")) && (!str_hour_window2.compare("")) ){

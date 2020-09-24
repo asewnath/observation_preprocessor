@@ -43,6 +43,22 @@ Observation Implementation Member Definitions
 ObservationImpl::ObservationImpl(){};
 ObservationImpl::~ObservationImpl(){};
 
+double
+UpdateFileDate(double oldDate){
+  /*
+    This function takes in an old date and updates by
+    one day if the second hour window is 0.
+    Parameters:
+      oldDate - date in the format YYYYMMDD.
+    Returns: 
+      newDate - date incremented by 1. 
+  */
+
+  std::cout << "we made it in here! :)" << std::endl;
+  return 0;
+}
+
+
 void
 ObservationImpl::set_file(const std::string& filename){
   this->filename = filename;
@@ -66,13 +82,26 @@ ObservationImpl::find_data( std::vector<std::string> &str_vect ){
   int size = this->obs_count;
   std::vector<double> data_vect(size);
   for(auto const& x : this->data_storage){
-    std::string key = x.first;
-    if(std::any_of(str_vect.begin(), str_vect.end(), [&key](const std::string & str){
-      return key.find(str) != std::string::npos;
-    }) ){  
-      std::transform(x.second.begin(), x.second.end(), data_vect.begin(), 
-                [](std::string const& val){return stod(val);});       
+
+    try{
+      std::string key = x.first;
+      if(std::any_of(str_vect.begin(), str_vect.end(), [&key](const std::string & str){
+        return key.find(str) != std::string::npos;
+      }) ){
+        //std::cout << str_vect[0] << std::endl; 
+        //std::cout << x.second.front() << std::endl;
+        //stod(x.second.front());        
+        //return a vector of values that have been transformed into doubled
+        std::transform(x.second.begin(), x.second.end(), data_vect.begin(), 
+                [](std::string const& val){return stod(val);}); 
+             
+      }
+    }catch(const std::exception& e ){
+      std::cout << e.what() << std::endl;
+      std::cout << "Couldn't find " << str_vect[0] << std::endl;
+      throw DataNotFound(); 
     }
+    
   }
   
   //wqcflag and pqcflag default value
@@ -225,7 +254,20 @@ ObservationImpl::convert_to_prepbufr(){
     hour_windows.push_back(str_ndate.substr(8));
   }
 
+
+  int hwCount = 0;
   for(auto hour_window : hour_windows){
+    
+    std::string currHw = hour_window;
+    double oldDate = this->ndate;
+    double newDate;
+
+    //logic to update the date for the file if needed
+    if((hwCount > 0)&&(!currHw.compare("00"))){
+      newDate = UpdateFileDate(oldDate);
+    }
+    hwCount++;
+    
 
     //break down eumetsat filename to retrieve datetime  
     std::stringstream ss(this->filename);

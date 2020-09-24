@@ -65,7 +65,7 @@ local_esma_install local_install:
 	ifort -c $(CURR_DIR)/observation_implementation/fortran/preprocess_bufr.f -lstdc++ -I/discover/nobackup/asewnath/GEOSgcm/install/include/NCEP_bufr_r8i4/
 	mpiicpc -c $(SRCS) -I. -I/discover/nobackup/asewnath/boost_1_70_0 -I/discover/nobackup/asewnath/json/single_include -I$(BASEDIR)/Linux/include/netcdf -L$(BASEDIR)/Linux/lib -I/discover/nobackup/asewnath/github/ioda-engines/jedi/include/ -I/discover/nobackup/asewnath/github/ioda-engines/ioda/include -I/discover/nobackup/asewnath/github/ioda-engines/deps/gsl-single/include/ -I/discover/nobackup/asewnath/github/eigen/ -std=c++14
 	mpiicpc -c $(IMPL_SRCS) -I. -I/discover/nobackup/asewnath/boost_1_70_0 -I/discover/nobackup/asewnath/json/single_include -I$(BASEDIR)/Linux/include/netcdf -L$(BASEDIR)/Linux/lib -I/discover/nobackup/asewnath/github/ioda-engines/jedi/include/ -I/discover/nobackup/asewnath/github/ioda-engines/ioda/include/ -I/discover/nobackup/asewnath/github/ioda-engines/deps/gsl-single/include/ -I/discover/nobackup/asewnath/github/eigen/ -std=c++14
-	mpiicpc -o run_single_obsproc c_pbutil.o c_pbmin.o preprocess_bufr.o -L $(ESMADIR)/install/lib/ -lNCEP_bufr_r8i4 -lNCEP_w3_r8i4 -I. -I$(ESMADIR)/install/include/GMAO_mpeu -lGMAO_mpeu $(OBJS) $(IMPL_OBJS) -lifcore -I/discover/nobackup/asewnath/github/ioda-engines/jedi/include/  -I/discover/nobackup/asewnath/boost_1_70_0 -I/discover/nobackup/asewnath/github/ioda-engines/ioda/include/ -I/discover/nobackup/asewnath/github/ioda-engines/deps/gsl-single/include/ -I/discover/nobackup/asewnath/github/eigen/ -I/discover/nobackup/asewnath/json $(NETCDF_LINKS) $(LIB_MPI) $(LIB_SYS) -lstdc++fs -lpthread -L/discover/nobackup/asewnath/github/ioda-engines/build/lib -lioda-engines -std=c++14 
+	mpiicpc -o run_preprocess c_pbutil.o c_pbmin.o preprocess_bufr.o -L $(ESMADIR)/install/lib/ -lNCEP_bufr_r8i4 -lNCEP_w3_r8i4 -I. -I$(ESMADIR)/install/include/GMAO_mpeu -lGMAO_mpeu $(OBJS) $(IMPL_OBJS) -lifcore -I/discover/nobackup/asewnath/github/ioda-engines/jedi/include/  -I/discover/nobackup/asewnath/boost_1_70_0 -I/discover/nobackup/asewnath/github/ioda-engines/ioda/include/ -I/discover/nobackup/asewnath/github/ioda-engines/deps/gsl-single/include/ -I/discover/nobackup/asewnath/github/eigen/ -I/discover/nobackup/asewnath/json $(NETCDF_LINKS) $(LIB_MPI) $(LIB_SYS) -lstdc++fs -lpthread -L/discover/nobackup/asewnath/github/ioda-engines/build/lib -lioda-engines -std=c++14 
 
 
 local_esma_clean local_clean:
@@ -82,7 +82,7 @@ local_esma_doc local_doc:
 #                  User Defined Targets
 #                  --------------------
 
-SRCS := observation.cpp run_single_obsproc.cpp
+SRCS := observation.cpp run_preprocess.cpp
          
 IMPL_SRCS := observation_implementation/observation_implementation.cpp observation_implementation/nrl_observation.cpp \
              observation_implementation/uw_observation.cpp observation_implementation/gsi_observation.cpp \
