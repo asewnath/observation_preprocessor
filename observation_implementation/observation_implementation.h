@@ -35,7 +35,15 @@ namespace obs{
   const double PI = 3.14159265358979323846264;
   const std::string JSON_SATLIST = 
         "./observation_implementation/satellite_id.json";
-  
+   
+  const double MONTHS_IN_YEAR = 12;
+  const double MAX_DAYS_IN_MONTH = 31;
+  const std::array<double, 4> THIRTY_DAY_MONTHS = {4, 6, 9, 11};
+  const double THIRTY_DAYS = 30;
+  const double FEBRUARY = 2;
+  const double MAX_DAYS_IN_FEB = 29;
+
+ 
   class ObservationImpl{
 
    public:
@@ -127,9 +135,9 @@ namespace obs{
     void preprocess();
 
   };
-
-
 }
+
+
 
 std::tuple<double, double> calculate_time(const std::string& old_time);
 std::tuple<std::string, std::string> 
@@ -142,7 +150,10 @@ convert_to_uv(std::vector<std::string>& spd, std::vector<std::string>& dir);
 std::map<std::string, std::vector<std::string>>
 construct_obs_labels_map();
 
-double UpdateFileDate(double oldDate);
+std::string
+UpdateFileDate(const std::string& oldDate);
+
+
 
 #endif //OBSERVATION_IMPLEMENTATION_H_
 

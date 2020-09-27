@@ -52,8 +52,6 @@ UWObservation::set_date(const std::string& hour_window1,
   date = get_filename(this->filename);
   date = date.substr(9, 8);
 
-  std::cout << hour_window1 << std::endl;
-  std::cout << hour_window2 << std::endl;
   this->ndate = stol((date + hour_window1 + hour_window2));
 
   for(auto const& x : this->data_storage){
@@ -77,9 +75,7 @@ UWObservation::set_date(const std::string& hour_window1,
     std::vector<std::string> new_day(this->obs_count, date);
     this->data_storage.push_back(std::pair<std::string, 
                     std::vector<std::string>>("day", new_day));  
-  }
-
-  std::cout << this->ndate << std::endl; 
+  } 
 }
 
 void
@@ -103,9 +99,6 @@ UWObservation::time_conversion(){
   std::string str_hour_window1, str_hour_window2;
   std::tie(str_hour_window1, str_hour_window2) = 
                determine_hour_windows(start_time, end_time);
-
-  std::cout << "start_time: "  << start_time << std::endl;
-  std::cout << "end_time: " << end_time << std::endl;
 
   double curr_hour_window, new_time;
   std::vector<std::string> time, hour_window;

@@ -43,19 +43,93 @@ Observation Implementation Member Definitions
 ObservationImpl::ObservationImpl(){};
 ObservationImpl::~ObservationImpl(){};
 
-double
-UpdateFileDate(double oldDate){
+std::string
+UpdateFileDate(const std::string& oldDate){
   /*
     This function takes in an old date and updates by
     one day if the second hour window is 0.
     Parameters:
-      oldDate - date in the format YYYYMMDD.
+      oldDate - date in the format YYYYMMDDH1(H2).
     Returns: 
-      newDate - date incremented by 1. 
+      newDate - date incremented by 1.
+
+    Checks:
+      -if oldDate is a garbage value 
   */
 
-  std::cout << "we made it in here! :)" << std::endl;
-  return 0;
+
+  //Extract year, month, and date and set them to numerical values
+  double dYear  = stod(oldDate.substr(0,4));
+  double dMonth = stod(oldDate.substr(4,2));
+  double dDay   = stod(oldDate.substr(6,2));  
+
+  std::cout << "here1" << std::endl;
+ 
+  //Checking the input
+  if( (dMonth > MONTHS_IN_YEAR)||(dDay > MAX_DAYS_IN_MONTH)  ) throw OutOfBounds();
+
+  if(std::any_of(THIRTY_DAY_MONTHS.begin(), THIRTY_DAY_MONTHS.end(), [&dMonth](double val){
+    return val == dMonth;
+  }) && (dDay > THIRTY_DAYS)  ) throw OutOfBounds();
+
+  if( (dMonth == FEBRUARY)||(dDay > MAX_DAYS_IN_FEB)  ) throw OutOfBounds();
+
+  //Handle 30-day months
+  if(std::any_of(THIRTY_DAY_MONTHS.begin(), THIRTY_DAY_MONTHS.end(),
+     [&dMonth](double val){ return val == dMonth;  })
+      && (dDay == THIRTY_DAYS)  ){
+    dDay = 1;
+    dMonth += 1;
+  }
+  //Handle February
+  else if( (dMonth == FEBRUARY)||(dDay >= 28)  ){
+    if(dDay == 29){
+      dDay = 1;
+      dMonth += 1;
+    }else{
+      //Determine if it's a leap year
+      if( ((static_cast<int>(dYear)%4 == 0) && (static_cast<int>(dYear)%100 != 0)) || 
+        ((static_cast<int>(dYear)%4 == 0) && (static_cast<int>(dYear)%100 == 0) && (int(dYear)%400 == 0)) ){  
+        dDay += 1;
+      }else{
+        dDay = 1;
+        dMonth += 1;
+      }
+    }
+  }
+  //Handle when day is equal to 31
+  else if(dDay == 31){
+    dDay = 1;   
+  }else{dDay += 1;}
+
+  //Handle month and year
+  if( dMonth > MONTHS_IN_YEAR  ){
+    dMonth = 1;
+    dYear += 1;
+  }
+
+  //Convert date month and year back to strings with two digits.
+   double numDigits = 2;
+   std::string sDay  = std::to_string(static_cast<int>(dDay));
+   std::string sMonth = std::to_string(static_cast<int>(dMonth));
+   std::string sYear  = std::to_string(static_cast<int>(dYear));
+ 
+   //change logic here to modify if length is not equal to two
+ 
+   if(sMonth.length() != 2){
+     sMonth = "0" + sMonth;
+   } 
+   if(sDay.length() != 2){
+     sDay = "0" + sDay;
+   }
+
+   if(sYear.length() != 4) throw OutOfBounds();
+
+  //Concatenate the strings
+  std::string newDate = sYear+sMonth+sDay;
+
+  //return the string
+  return newDate;
 }
 
 
@@ -87,10 +161,7 @@ ObservationImpl::find_data( std::vector<std::string> &str_vect ){
       std::string key = x.first;
       if(std::any_of(str_vect.begin(), str_vect.end(), [&key](const std::string & str){
         return key.find(str) != std::string::npos;
-      }) ){
-        //std::cout << str_vect[0] << std::endl; 
-        //std::cout << x.second.front() << std::endl;
-        //stod(x.second.front());        
+      }) ){       
         //return a vector of values that have been transformed into doubled
         std::transform(x.second.begin(), x.second.end(), data_vect.begin(), 
                 [](std::string const& val){return stod(val);}); 
@@ -254,22 +325,24 @@ ObservationImpl::convert_to_prepbufr(){
     hour_windows.push_back(str_ndate.substr(8));
   }
 
-
+  bool dateChange = false;
   int hwCount = 0;
   for(auto hour_window : hour_windows){
     
     std::string currHw = hour_window;
-    double oldDate = this->ndate;
-    double newDate;
+    std::string oldDate = str_ndate;
+    std::string fileDate;
 
     //logic to update the date for the file if needed
     if((hwCount > 0)&&(!currHw.compare("00"))){
-      newDate = UpdateFileDate(oldDate);
+      fileDate = UpdateFileDate(oldDate);
+    }else{
+      fileDate = str_ndate.substr(0, 8); //remove the hour windows
     }
     hwCount++;
-    
 
-    //break down eumetsat filename to retrieve datetime  
+    //MODIFY EVERYTHING TO DIRECTLY DEAL WITH DATETIME STRING
+  
     std::stringstream ss(this->filename);
     std::vector<std::string> fname_tokens;
     std::string token;
@@ -293,12 +366,14 @@ ObservationImpl::convert_to_prepbufr(){
       fs::create_directory(p2);
     }
     //fs::path p3 = "../output/"+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
-    fs::path p3 = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
+    //fs::path p3 = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
+    fs::path p3 = path_str+this->stationid+"/"+fileDate.substr(0,6);
     if(!fs::exists(p3)){
       fs::create_directory(p3);
     }
     //fs::path p4 = "../output/"+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr";
-    fs::path p4 = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr";
+    //fs::path p4 = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr";
+    fs::path p4 = path_str+this->stationid+"/"+fileDate.substr(0,6)+"/prepbufr";
     if(!fs::exists(p4)){
       fs::create_directory(p4);
     }
@@ -306,11 +381,16 @@ ObservationImpl::convert_to_prepbufr(){
     //std::string return_dir = "../output/"+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
     //std::string output_directory = "../output/"+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr/";
 
-    std::string return_dir = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
-    std::string output_directory = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr/";    
+    //std::string return_dir = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
+    //std::string output_directory = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr/";    
 
-    std::string outfn = output_directory + fname_tokens.back() + "-" + hour_window + ".bufr";
-    std::cout << outfn << std::endl;
+    std::string return_dir = path_str+this->stationid+"/"+fileDate.substr(0,6);
+    std::string output_directory = path_str+this->stationid+"/"+fileDate.substr(0,6)+"/prepbufr/";
+
+    std::string outfn = output_directory + fname_tokens.back() + "-" + fileDate + "-" +  hour_window + ".bufr";
+    
+
+    //std::cout << outfn << std::endl;
     //this->output_filenames.push_back(outfn);
     this->output_filenames.push_back(return_dir);
     int len_out = outfn.size();
