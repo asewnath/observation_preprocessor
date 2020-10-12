@@ -19,10 +19,15 @@ for subdir, dirs, files in os.walk(parent_dir):
       print(filename)
     
       #Look at filename and get time and date and satellite
-      str_hour = filename[18:20]
-      str_date = filename[9:17]
-      str_sat = filename[0:5]
-      hour_window = filename[21:23]
+      #str_hour = filename[18:20]
+      #str_date = filename[9:17]
+      #str_sat = filename[0:5]
+      #hour_window = filename[21:23]
+
+      name_list = filename.split('-')
+      str_hour = name_list[3]
+      str_date = name_list[4]
+      hour_window = name_list[5][0:2]
 
       #Construct bufr filename
       #dirname = "./prepbufr/" + "GOES" + "-" + str_date + "-" + hour_window

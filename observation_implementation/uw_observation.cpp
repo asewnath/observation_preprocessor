@@ -95,11 +95,15 @@ UWObservation::time_conversion(){
   double start_time, end_time;
   std::tie(start_time, end_time) = find_time_range(hms);
 
+  std::cout <<"start time: " << start_time << std::endl;
+  std::cout <<"end time: " << end_time << std::endl; 
+
   //do range determinations
   std::string str_hour_window1, str_hour_window2;
   std::tie(str_hour_window1, str_hour_window2) = 
                determine_hour_windows(start_time, end_time);
-
+  std::cout << str_hour_window1 << std::endl;
+  std::cout << str_hour_window2 << std::endl;
   double curr_hour_window, new_time;
   std::vector<std::string> time, hour_window;
   for(auto& old_time : hms){
@@ -111,6 +115,8 @@ UWObservation::time_conversion(){
     //std::cout << "curr_hour_window: " << curr_hour_window << std::endl;
 
     if(stoi(str_hour_window1) == curr_hour_window){
+      //std::cout << "in here" << std::endl;
+      //std::cout << str_hour_window1 << std::endl; 
       hour_window.push_back(str_hour_window1);
     }else{
       hour_window.push_back(str_hour_window2);
@@ -394,9 +400,17 @@ std::tuple<std::string, std::string>
 determine_hour_windows(double start_time, double end_time){
   std::string str_hour_window1 = "";
   std::string str_hour_window2 = "";
+
+  //CATCH THE HOUR WINDOW CARRYING OVER FROM THE PREVIOUS DAY
+
+  if( (start_time <= 300) && ((end_time > 300)&&(end_time <= 900) )){
+    //expecting two windows, carry over from previous day.
+    str_hour_window1 = "00";
+  }  
+
   if( ((start_time <= 300)||(start_time > 2100)) && 
         ((end_time <= 300)||(end_time > 2100)) ){
-      str_hour_window1 = "00";
+    str_hour_window1 = "00";
   }
   if( ((start_time > 300)&&(start_time <= 900)) || 
               ((end_time > 300)&&(end_time <= 900)) ){
@@ -424,7 +438,7 @@ determine_hour_windows(double start_time, double end_time){
   }
 
   //THIS IS PART OF A NEW DAY
-  if( ((start_time > 1500)&&(start_time <= 2100)) &&
+  if( ((start_time > 1500)&&(start_time <= 2100)) && (end_time > 2100) &&
 		(str_hour_window1.compare("") != 0 )  ){
     str_hour_window2 = "00";
   }
@@ -432,6 +446,8 @@ determine_hour_windows(double start_time, double end_time){
   if( (!str_hour_window1.compare("")) && (!str_hour_window2.compare("")) ){
     throw OutOfBounds();
   }
+  //std::cout << str_hour_window1 << std::endl;
+  //std::cout << str_hour_window2 << std::endl; 
   return std::make_tuple(str_hour_window1, str_hour_window2);
 }
 

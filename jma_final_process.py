@@ -25,11 +25,13 @@ parent_dir = root_dir+"/prepbufr/"
 for _, _, files in os.walk(parent_dir):
   for filename in files:
     print(filename)
-    fname_parts = filename.split('_')
+    #fname_parts = filename.split('_')
+    fname_parts = filename.split('-')
 
     #Make a new directory with the date and hour window
     #(skip if one already exists)
-    dirname = parent_dir + "JMA" + "-" + fname_parts[1]
+    #dirname = parent_dir + "JMA" + "-" + fname_parts[1]
+    dirname = parent_dir + "JMA" + '-' + fname_parts[1] + fname_parts[2][0:2]
     print(dirname)
     if( not os.path.isdir(dirname)):
       subprocess.call(["mkdir", dirname])

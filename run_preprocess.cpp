@@ -67,27 +67,50 @@ int main(int argc, char *argv[]) {
         std::cout << complete_filename << std::endl;
         output_dirs = obs.evaluate_file(complete_filename, source, format);
         //append all output directories to a new vector if it doesn't exist
-        //std::cout << output_dirs.front() << std::endl;
+        //std::cout << output_dirs.size() << std::endl;
+        
+        /*
         if(output_dirs.size() == 1){ 
-          if( (std::find(output_dir_vect.begin(), output_dir_vect.end(), output_dirs.front()) == output_dir_vect.end()) || output_dir_vect.empty() ) {
+          if( (std::find(output_dir_vect.begin(), output_dir_vect.end(), output_dirs.front()) == output_dir_vect.end()) || output_dir_vect.empty() ) { 
             output_dir_vect.push_back(output_dirs.front());
+            std::cout << "in here" << std::endl;
           }
+        }        
+        */
+        
+        if(!output_dirs.empty()){
+
+          for( auto dir_name : output_dirs  ){
+            //if not already in the output_dir_vect, add it
+            if(std::find(output_dir_vect.begin(), output_dir_vect.end(), 
+                   dir_name) == output_dir_vect.end()){
+               output_dir_vect.push_back(dir_name);
+            }
+          }
+
+        }else{
+          std::cout << "ERROR: no output directory returned." << std::endl;
         }
+        
+
         std::cout << "Completed wind processing for " << entry->d_name << std::endl;
         //break;
       }
     }
   }
-  closedir(dp); 
-  //return 0;  
+  closedir(dp);
+  //std::cout << "in end" << std::endl; 
+  //return 0;
+
+    
   for (auto & dir : output_dir_vect) {
     std::cout << dir << std::endl;
   
     if(output_arg.compare("prepbufr")==0){
 
       //get the directory string of the output_file
-      //fs::path p = dir;
-      //std::cout << p.parent_path() << std::endl;
+      fs::path p = dir;
+      //std::cout << "in prepbufr" << std::endl;
       //std::string parent_dir = p.parent_path().string();  
       std::string parent_dir = dir; 
 
@@ -97,6 +120,11 @@ int main(int argc, char *argv[]) {
       if( source_arg.compare("eumetsat") == 0 ){
         python_cmd += "eumetsat_final_process.py ";
         python_cmd += parent_dir;
+        system(python_cmd.c_str());
+
+        python_cmd = "python eumetsat_fill_in_bufr.py ";
+        python_cmd += parent_dir;
+        //python_cmd += "../intermediate_bufr/";
         system(python_cmd.c_str());
       }
       if( source_arg.compare("jma") == 0 ){
@@ -114,11 +142,18 @@ int main(int argc, char *argv[]) {
       if( source_arg.compare("wisconsin") == 0  ){
         python_cmd += "goes_final_process.py ";
         python_cmd += parent_dir;
+        //std::cout << "python"  << std::endl;
+        system(python_cmd.c_str());
+
+        python_cmd = "python goes_fill_in_bufr.py ";
+        python_cmd += parent_dir;
+        //python_cmd += "../intermediate_bufr/";
         system(python_cmd.c_str());
       }
     }
    //break; 
+   std::cout << output_dirs.size() << std::endl;
   }
-
+   
 }
 

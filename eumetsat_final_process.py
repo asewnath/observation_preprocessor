@@ -15,11 +15,15 @@ parent_dir = sys.argv[1] + "/prepbufr/"
 
 for subdir, dirs, files in os.walk(parent_dir):
     for filename in files:
-      print(filename)
-      str_date = filename[32:40]
-      print(str_date)
-      str_hour = filename[len(filename)-7: len(filename)-5] 
-      print(str_hour)
+      #print(filename)
+      #str_date = filename[32:40]
+      #print(str_date)
+      #str_hour = filename[len(filename)-7: len(filename)-5] 
+      #print(str_hour)
+ 
+      fname_list = filename.split("-")
+      str_date = fname_list[8]
+      str_hour = fname_list[9][0:2]     
 
       #dirname = "./eumetsat_bufr/"+ "METSAT" + str_date + "-" + str_hour
       dirname = parent_dir +  "METSAT" + str_date + "-" + str_hour  

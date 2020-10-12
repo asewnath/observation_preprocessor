@@ -62,17 +62,17 @@ UpdateFileDate(const std::string& oldDate){
   double dYear  = stod(oldDate.substr(0,4));
   double dMonth = stod(oldDate.substr(4,2));
   double dDay   = stod(oldDate.substr(6,2));  
-
-  std::cout << "here1" << std::endl;
  
+
+
   //Checking the input
   if( (dMonth > MONTHS_IN_YEAR)||(dDay > MAX_DAYS_IN_MONTH)  ) throw OutOfBounds();
-
+   
   if(std::any_of(THIRTY_DAY_MONTHS.begin(), THIRTY_DAY_MONTHS.end(), [&dMonth](double val){
     return val == dMonth;
   }) && (dDay > THIRTY_DAYS)  ) throw OutOfBounds();
-
-  if( (dMonth == FEBRUARY)||(dDay > MAX_DAYS_IN_FEB)  ) throw OutOfBounds();
+  
+  if( (dMonth == FEBRUARY)&&(dDay > MAX_DAYS_IN_FEB)  ) throw OutOfBounds();
 
   //Handle 30-day months
   if(std::any_of(THIRTY_DAY_MONTHS.begin(), THIRTY_DAY_MONTHS.end(),
@@ -176,24 +176,28 @@ ObservationImpl::find_data( std::vector<std::string> &str_vect ){
   }
   
   //wqcflag and pqcflag default value
-  if ( (str_vect[0].compare("wqcflag") != 0) || (str_vect[0].compare("pqcflag") != 0) ){
+  if ( (str_vect[0].compare("wqcflag") == 0) || (str_vect[0].compare("pqcflag") == 0) ){
     if( std::all_of(data_vect.begin(), data_vect.end(), [](double i) { return i==0; }) ){
       data_vect.assign(this->obs_count, 2);
+      //std::cout << "Update QC flags" << std::endl;
     }
   }
   
   //set pres_err, wind_err, rffl, eeqf
-  if ( (str_vect[0].compare("pres_err") != 0) || (str_vect[0].compare("wind_err") != 0) ||
-       (str_vect[0].compare("rffl") != 0) || (str_vect[0].compare("eeqf") != 0) ){
-    if( std::all_of(data_vect.begin(), data_vect.end(), [](double i) { return i==0; }) ){
-      data_vect.assign(this->obs_count, MISS);
-    }
-  } 
-
+  //if(str_vect[0].compare("hour") != 0 ){ //take care of hour window issue
+    if ( (str_vect[0].compare("pres_err") == 0) || (str_vect[0].compare("wind_err") == 0) ||
+         (str_vect[0].compare("rffl") == 0) || (str_vect[0].compare("eeqf") == 0) ){
+      if( std::all_of(data_vect.begin(), data_vect.end(), [](double i) { return i==0; }) ){
+        data_vect.assign(this->obs_count, MISS);
+        //std::cout << "Update Error flags" << std::endl;
+      }
+    } 
+  //}
   //set qify, qifn
-  if ( (str_vect[0].compare("qify") != 0) || (str_vect[0].compare("qifn") != 0) ){
+  if ( (str_vect[0].compare("qify") == 0) || (str_vect[0].compare("qifn") == 0) ){
     if( std::all_of(data_vect.begin(), data_vect.end(), [](double i) { return i==0; }) ){
       data_vect.assign(this->obs_count, MISS);
+      //std::cout << "Update QI flags" << std::endl;
     }else{
       //Check if QI is in percentages and change it if it's not
       double max = *std::max_element(data_vect.begin(), data_vect.end());
@@ -203,11 +207,11 @@ ObservationImpl::find_data( std::vector<std::string> &str_vect ){
       }
     }
   }
-  //check if empty
-  if( std::all_of(data_vect.begin(), data_vect.end(), [](double i) { return i==0; }) ){
-      std::cout << str_vect[0]  << "not found" << std::endl;
-      throw DataNotFound();
-  }
+  //check if empty. This is a terrible test. It doesn't account for values actually being 0.
+  //if( std::all_of(data_vect.begin(), data_vect.end(), [](double i) { return i==0; }) ){
+  //    std::cout << str_vect[0]  << " not found" << std::endl;
+  //    throw DataNotFound();
+  //}
   return data_vect;
 }
 
@@ -329,6 +333,7 @@ ObservationImpl::convert_to_prepbufr(){
   int hwCount = 0;
   for(auto hour_window : hour_windows){
     
+    double master_hour_window = stod(hour_window);
     std::string currHw = hour_window;
     std::string oldDate = str_ndate;
     std::string fileDate;
@@ -336,6 +341,7 @@ ObservationImpl::convert_to_prepbufr(){
     //logic to update the date for the file if needed
     if((hwCount > 0)&&(!currHw.compare("00"))){
       fileDate = UpdateFileDate(oldDate);
+      //fileDate = str_ndate.substr(0, 8);
     }else{
       fileDate = str_ndate.substr(0, 8); //remove the hour windows
     }
@@ -351,8 +357,9 @@ ObservationImpl::convert_to_prepbufr(){
     } 
    
     //Add option to temporarily change the string
-    std::string path_str = "../output/";
+    //std::string path_str = "../../output/";
     //std::string path_str = "/archive/u/asewnath/TEST/"; 
+    std::string path_str = "/archive/u/asewnath/reanalysis/GOES/output/";
 
     //fs::path p1 = "../output/";
     fs:: path p1 = path_str;
@@ -367,15 +374,24 @@ ObservationImpl::convert_to_prepbufr(){
     }
     //fs::path p3 = "../output/"+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
     //fs::path p3 = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
-    fs::path p3 = path_str+this->stationid+"/"+fileDate.substr(0,6);
+    //fs::path p3 = path_str+this->stationid+"/Y"+fileDate.substr(0,4);
+    fs::path p3 = p2.string()+"/Y"+fileDate.substr(0,4);
     if(!fs::exists(p3)){
       fs::create_directory(p3);
     }
-    //fs::path p4 = "../output/"+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr";
-    //fs::path p4 = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr";
-    fs::path p4 = path_str+this->stationid+"/"+fileDate.substr(0,6)+"/prepbufr";
+
+    //fs::path p4 = path_str+this->stationid+"/M"+fileDate.substr(4,2);
+    fs::path p4 = p3.string()+"/M"+fileDate.substr(4,2);
     if(!fs::exists(p4)){
       fs::create_directory(p4);
+    }
+
+    //fs::path p4 = "../output/"+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr";
+    //fs::path p4 = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr";
+    //fs::path p5 = path_str+this->stationid+"/"+fileDate.substr(0,6)+"/prepbufr";
+    fs::path p5 = p4.string()+"/prepbufr/";
+    if(!fs::exists(p5)){
+      fs::create_directory(p5);
     }
 
     //std::string return_dir = "../output/"+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
@@ -384,8 +400,11 @@ ObservationImpl::convert_to_prepbufr(){
     //std::string return_dir = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6);
     //std::string output_directory = path_str+this->stationid+"/"+std::to_string(this->ndate).substr(0,6)+"/prepbufr/";    
 
-    std::string return_dir = path_str+this->stationid+"/"+fileDate.substr(0,6);
-    std::string output_directory = path_str+this->stationid+"/"+fileDate.substr(0,6)+"/prepbufr/";
+    //std::string return_dir = path_str+this->stationid+"/"+fileDate.substr(0,6);
+    //std::string output_directory = path_str+this->stationid+"/"+fileDate.substr(0,6)+"/prepbufr/";
+
+    std::string return_dir = p4.string();
+    std::string output_directory = p5.string();
 
     std::string outfn = output_directory + fname_tokens.back() + "-" + fileDate + "-" +  hour_window + ".bufr";
     
@@ -486,16 +505,15 @@ ObservationImpl::convert_to_prepbufr(){
     label_vect = position->second;
     std::vector<double> f_hour_window  = find_data(label_vect);
     label_vect.clear();
-  
+    //std::cout << f_hour_window.front() << std::endl; 
     
 
 
     //convert hour window to string
-    std::vector<std::string> hour_window_vect;
+    //std::vector<std::string> hour_window_vect;
     
-    std::transform(std::begin(f_hour_window), std::end(f_hour_window), std::back_inserter(hour_window_vect),
-		  [](double val){return std::to_string((int)val);}
-	);
+    //std::transform(std::begin(f_hour_window), std::end(f_hour_window), std::back_inserter(hour_window_vect),
+    //		  [](double val){return std::to_string((int)val)});
 
     std::vector<double>::iterator it_pres_err = pres_err.begin();
     std::vector<double>::iterator it_wind_err = wind_err.begin();
@@ -505,8 +523,9 @@ ObservationImpl::convert_to_prepbufr(){
     std::vector<double>::iterator it_qifn = qifn.begin();
     std::vector<double>::iterator it_eeqf = eeqf.begin();
 
-    std::vector<std::string>::iterator it_hour_window = hour_window_vect.begin(); 
-    
+    //std::vector<std::string>::iterator it_hour_window = hour_window_vect.begin(); 
+    std::vector<double>::iterator it_hour_window = f_hour_window.begin();    
+
     obs_initbufr( outfn.c_str(), &len_out, this->tablefn.c_str(), &len_tab);
   
     //double MISS_debug = 20;
@@ -528,10 +547,15 @@ ObservationImpl::convert_to_prepbufr(){
       qify = *it_qify;
       qifn = *it_qifn;
       eeqf = *it_eeqf;      
+      //std::string curr_hour_window = *it_hour_window;      
+      double curr_hour_window = *it_hour_window;      
 
-      std::string curr_hour_window = *it_hour_window;
-      if(!curr_hour_window.compare(hour_window)){
- 
+      //std::cout << "curr_hour_window: " << curr_hour_window  << std::endl;
+      //std::cout << "hour_window: " << master_hour_window  <<std::endl;
+      //std::string curr_hour_window = *it_hour_window;
+      //if(!curr_hour_window.compare(hour_window)){
+      if(master_hour_window == curr_hour_window){
+        //std::cout << "made it!" << std::endl; 
         obs_write_wind( this->stationid.c_str(), &lon, &lat, &time, &obstype, 
     		    &pres, &uwnd, &vwnd, &pqcflag, &wqcflag, &pres_err, 
                     &wind_err, this->subset.c_str(), &final_ndate, &MISS, 

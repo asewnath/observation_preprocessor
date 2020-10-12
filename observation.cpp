@@ -18,13 +18,17 @@ Observation Member Definitions
 std::vector<std::string>
 Observation::evaluate_file(const std::string& filename, 
                            FileSource source, OutputFormat format){
-  std::unique_ptr<ObservationImpl> obsptr;
-  obsptr = obs_selection(source);
-  obsptr->set_file(filename);
-  obsptr->preprocess();
-  obsptr->output_data(format);
-  //obsptr->output_filenames.push_back("dummy_file.bfr");
-  return obsptr->output_filenames;
+  try{
+    std::unique_ptr<ObservationImpl> obsptr;
+    obsptr = obs_selection(source);
+    obsptr->set_file(filename);
+    obsptr->preprocess();
+    obsptr->output_data(format);
+    //obsptr->output_filenames.push_back("dummy_file.bfr");
+    return obsptr->output_filenames;
+  }catch(const std::exception& e){
+    std::cout << "Unable to process file." << std::endl;
+  }
 }
 
 std::unique_ptr<ObservationImpl> 
