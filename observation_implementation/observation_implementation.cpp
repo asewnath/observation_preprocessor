@@ -359,7 +359,8 @@ ObservationImpl::convert_to_prepbufr(){
     //Add option to temporarily change the string
     //std::string path_str = "../../output/";
     //std::string path_str = "/archive/u/asewnath/TEST/"; 
-    std::string path_str = "/archive/u/asewnath/reanalysis/GOES/output/";
+    //std::string path_str = "/archive/u/asewnath/reanalysis/GOES/output/";
+    std::string path_str = "/archive/u/asewnath/reanalysis/JMA/output/";
 
     //fs::path p1 = "../output/";
     fs:: path p1 = path_str;

@@ -48,4 +48,9 @@ for subdir, dirs, files in os.walk(parent_dir):
     print(dirname)
     for subdir1,dirs1,files1 in os.walk(parent_dir+dirname):
       for filename1 in files1:
-        subprocess.call(["cp", parent_dir+dirname+'/'+filename1, final_dir+filename1])
+        if(os.path.isfile(sys.argv[1]+'/'+filename1)):
+          print("file already exists, call cat")
+          subprocess.call(("cat " + parent_dir+dirname+'/'+filename1  + " >> " + sys.argv[1]+'/'+filename1),  shell=True)
+        else:
+          subprocess.call(["cp", parent_dir+dirname+'/'+filename1, sys.argv[1]+'/'+filename1])
+        #subprocess.call(["cp", parent_dir+dirname+'/'+filename1, final_dir+filename1])
