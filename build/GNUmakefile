@@ -9,7 +9,7 @@
 #       ESMADIR := $(PWD)/../../..
 #endif
 
-ESMADIR := /discover/nobackup/asewnath/GEOSgcm/
+ESMADIR := /discover/nobackup/asewnath/tools/GEOSgcm/
 
 # Compilation rules, flags, etc
 # -----------------------------
@@ -61,13 +61,10 @@ local_esma_install local_install:
 
 	ifort -c $(CURR_DIR)src/fortran/c_pbutil.f -L $(ESMADIR)/install/lib/ -lNCEP_bufr_r8i4 -I $(ESMADIR)/install/include/GMAO_mpeu -extend-source 132
 	ifort -c $(CURR_DIR)src/fortran/c_pbmin.f -I. -L $(ESMADIR)/install/lib/ -lNCEP_bufr_r8i4 -I $(ESMADIR)/install/include/GMAO_mpeu -extend-source 132
-	ifort -c $(CURR_DIR)src/fortran/preprocess_kma.f -lstdc++ -I/discover/nobackup/asewnath/GEOSgcm/install/include/NCEP_bufr_r8i4/
-	ifort -c $(CURR_DIR)src/fortran/preprocess_eumetsat.f -lstdc++ -I/discover/nobackup/asewnath/GEOSgcm/install/include/NCEP_bufr_r8i4/
-	ifort -c $(CURR_DIR)src/fortran/preprocess_avhrr.f -lstdc++ -I/discover/nobackup/asewnath/GEOSgcm/install/include/NCEP_bufr_r8i4/
-	#mpiicpc -c $(IMPL_SRCS_DIR) -I. -I/discover/nobackup/asewnath/boost_1_70_0 -I/discover/nobackup/asewnath/json/single_include -I$(BASEDIR)/Linux/include/netcdf -L$(BASEDIR)/Linux/lib -I/discover/nobackup/asewnath/github/ioda-engines/jedi/include/ -I/discover/nobackup/asewnath/github/ioda-engines/ioda/include -I/discover/nobackup/asewnath/github/ioda-engines/deps/gsl-single/include/ -I/discover/nobackup/asewnath/github/eigen/ -std=c++14
+	ifort -c $(CURR_DIR)src/fortran/preprocess_kma.f -lstdc++ -I$(ESMADIR)/install/include/NCEP_bufr_r8i4/
+	ifort -c $(CURR_DIR)src/fortran/preprocess_eumetsat.f -lstdc++ -I$(ESMADIR)/install/include/NCEP_bufr_r8i4/
+	ifort -c $(CURR_DIR)src/fortran/preprocess_avhrr.f -lstdc++ -I$(ESMADIR)/install/include/NCEP_bufr_r8i4/
 	mpiicpc -c $(IMPL_SRCS_DIR) -I. -I/discover/nobackup/asewnath/boost_1_70_0 -I/discover/nobackup/asewnath/json/single_include -I$(BASEDIR)/Linux/include/netcdf -L$(BASEDIR)/Linux/lib -I/discover/nobackup/asewnath/github/eigen/ -std=c++14
-
-	#mpiicpc -o ../run_preprocess c_pbutil.o c_pbmin.o preprocess_eumetsat.o preprocess_kma.o preprocess_avhrr.o -L $(ESMADIR)/install/lib/ -lNCEP_bufr_r8i4 -lNCEP_w3_r8i4 -I. -I$(ESMADIR)/install/include/GMAO_mpeu -lGMAO_mpeu $(OBJS) $(IMPL_OBJS) -lifcore -I/discover/nobackup/asewnath/github/ioda-engines/jedi/include/  -I/discover/nobackup/asewnath/boost_1_70_0 -I/discover/nobackup/asewnath/github/ioda-engines/ioda/include/ -I/discover/nobackup/asewnath/github/ioda-engines/deps/gsl-single/include/ -I/discover/nobackup/asewnath/github/eigen/ -I/discover/nobackup/asewnath/json $(NETCDF_LINKS) $(LIB_MPI) $(LIB_SYS) -lstdc++fs -lpthread -L/discover/nobackup/asewnath/github/ioda-engines/build/lib -lioda-engines -std=c++14 
 
 	mpiicpc -o ../run_preprocess c_pbutil.o c_pbmin.o preprocess_eumetsat.o preprocess_kma.o preprocess_avhrr.o -L $(ESMADIR)/install/lib/ -lNCEP_bufr_r8i4 -lNCEP_w3_r8i4 -I. -I$(ESMADIR)/install/include/GMAO_mpeu -lGMAO_mpeu $(OBJS) $(IMPL_OBJS) -lifcore -I/discover/nobackup/asewnath/boost_1_70_0 -I/discover/nobackup/asewnath/github/eigen/ -I/discover/nobackup/asewnath/json $(NETCDF_LINKS) $(LIB_MPI) $(LIB_SYS) -lstdc++fs -lpthread -std=c++14
 
