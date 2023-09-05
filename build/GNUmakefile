@@ -9,7 +9,7 @@
 #       ESMADIR := $(PWD)/../../..
 #endif
 
-ESMADIR := /discover/nobackup/asewnath/tools/GEOSgcm/
+ESMADIR := /discover/nobackup/asewnath/GEOSgcm/
 
 # Compilation rules, flags, etc
 # -----------------------------
