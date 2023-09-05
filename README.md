@@ -2,12 +2,11 @@
 
 # Steps to build:
 1. Source g5_modules from GEOSgcm: `source /discover/nobackup/asewnath/GEOSgcm/@env/g5_modules.sh`. Feel free to use your own GEOSgcm build for this.
-2.  `mkdir obs_processing`
-3.  `git clone https://github.com/asewnath/observation_preprocessor.git`
-4.  `cd observation_preprocessor/build`
-5.  You can leave `ESMADIR` in `GNUmakefile` as is or you can change the field to point to your build of GEOSgcm.
-6.  `make install`
-7.  `cd ../`
+2.  `git clone https://github.com/asewnath/observation_preprocessor.git`
+3.  `cd observation_preprocessor/build`
+4.  You can leave `ESMADIR` in `GNUmakefile` as is or you can change the field to point to your build of GEOSgcm.
+5.  `make install`
+6.  `cd ../`
 
 Now you have the executable `run_preprocess` to start preprocessing files. 
 
