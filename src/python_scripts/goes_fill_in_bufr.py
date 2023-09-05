@@ -45,8 +45,7 @@ for subdir, dirs, files in os.walk(parent_dir):
         else:
           subprocess.call(["cp", parent_dir+dirname+'/'+filename1, sys.argv[1]+'/'+filename1])
 
-#int_prepbufr_abs_path = os.path.abspath(sys.argv[1] + "/intermediate_prepbufr/")
-#print(int_prepbufr_abs_path)
-#subprocess.call(["rm -rf ", int_prepbufr_abs_path])
-#subprocess.call(["rm -rf ", sys.argv[1] + "intermediate_prepbufr/"])
-#subprocess.call(["rm -rf ", sys.argv[1]+"prepbufr/"])
+int_prepbufr_abs_path = os.path.abspath(sys.argv[1] + "/intermediate_prepbufr/")
+prepbufr_abs_path = os.path.abspath(sys.argv[1] + "/prepbufr/")
+subprocess.call(("rm -rf " + int_prepbufr_abs_path), shell=True)
+subprocess.call(("rm -rf " + prepbufr_abs_path), shell=True)
