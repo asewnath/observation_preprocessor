@@ -1,0 +1,55 @@
+LISTING FOR MESSAGE TYPE SATWND
+
+Key for header:
+SID  -- Station identification
+YOB  -- Latitude (N+, S-)
+XOB  -- Longitude (E)
+ELV  -- Elevation (meters)
+DHR  -- Observation time minus cycle time (hours)
+RPT  -- Reported observation time (hours)
+TCOR -- Indicator whether observation time used to generate DHR was corrected (0- Observation time is reported time, no
+         correction, 1- Observation time corrected based on reported launch time, 2- Observation time corrected even though
+         launch time is missing)
+TYP  -- PREPBUFR report type
+TSB  -- PREPBUFR report subtype
+T29  -- Input report type
+ITP  -- Instrument type (BUFR code table 0-02-001)
+SQN  -- Report sequence number
+PROCN - Process number for this MPI run (obtained from script)
+SAID -- Satellite identifier (BUFR code table 0-01-007)
+RFFL -- NESDIS recursive filter flag
+
+
+PREPBUFR FILE DATE IS: 2018090100
+
+
+
+SID=GMAO_AMV, YOB=  0.00, XOB=140.70, ELV=*****, DHR=-1.500, RPT=********, TCOR=*, TYP=242, TSB=*, T29=***, ITP=**, SQN=******
+PROCN=**, SAID=173
+RFFL=***
+----------------------------------------------------------------------------------------------
+          level    1  obs      qmark   qc_step   rcode    fcst     anal     oberr    category 
+----------------------------------------------------------------------------------------------
+PRESSURE (MB)         444.4      2.              ***** ******** ******** ********       6.
+U-COMP WIND (M/S)      44.4      2.              ***** ******** ********      5.0       6.
+V-COMP WIND (M/S)       4.4      2.              ***** ******** ********      5.0       6.
+
+SID=GMAO_AMV, YOB=  0.00, XOB=285.00, ELV=*****, DHR= 0.000, RPT=********, TCOR=*, TYP=247, TSB=*, T29=***, ITP=**, SQN=******
+PROCN=**, SAID=270
+RFFL=***
+----------------------------------------------------------------------------------------------
+          level    1  obs      qmark   qc_step   rcode    fcst     anal     oberr    category 
+----------------------------------------------------------------------------------------------
+PRESSURE (MB)         333.3      2.              ***** ******** ******** ********       6.
+U-COMP WIND (M/S)      33.3      2.              ***** ******** ********      4.0       6.
+V-COMP WIND (M/S)       3.3      2.              ***** ******** ********      4.0       6.
+
+SID=GMAO_AMV, YOB=  0.00, XOB= 40.00, ELV=*****, DHR= 1.500, RPT=********, TCOR=*, TYP=253, TSB=*, T29=***, ITP=**, SQN=******
+PROCN=**, SAID= 70
+RFFL=***
+----------------------------------------------------------------------------------------------
+          level    1  obs      qmark   qc_step   rcode    fcst     anal     oberr    category 
+----------------------------------------------------------------------------------------------
+PRESSURE (MB)         222.2      2.              ***** ******** ******** ********       6.
+U-COMP WIND (M/S)      22.2      2.              ***** ******** ********      3.0       6.
+V-COMP WIND (M/S)       2.2      2.              ***** ******** ********      3.0       6.
