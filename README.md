@@ -1,7 +1,7 @@
 # Observation Preprocessor
 
 # Steps to build:
-1. CHANGE Source g5_modules from GEOSgcm: `source /discover/nobackup/asewnath/GEOSgcm/@env/g5_modules.sh`. Feel free to use your own GEOSgcm build for this.
+1. Source g5_modules from GEOSgcm: `source /discover/nobackup/asewnath/GEOSgcm/@env/g5_modules.sh`. Feel free to use your own GEOSgcm build for this.
 2.  `mkdir obs_processing`
 3.  `git clone https://github.com/asewnath/observation_preprocessor.git`
 4.  `cd observation_preprocessor/build`
