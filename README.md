@@ -1,4 +1,6 @@
-# Observation Preprocessor
+# GMAO Observation Preprocessor
+
+The goal of the observation preprocessor is to provide a framework for reading in various data types and outputting injested information to common formats. 
 
 # Steps to build:
 1. Source g5_modules from GEOSgcm: `source /discover/nobackup/asewnath/GEOSgcm/@env/g5_modules.sh`. Feel free to use your own GEOSgcm build for this.
