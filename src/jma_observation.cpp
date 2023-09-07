@@ -94,7 +94,7 @@ JMAObservation::preprocess(){
     throw DataNotFound();
   }
   
-  std::cout << "obstype is " << str_obstype << " which sets to " << str_int_obstype;
+  //std::cout << "obstype is " << str_obstype << " which sets to " << str_int_obstype;
   std::vector<std::string> obstype(this->obs_count, str_int_obstype);
   this->data_storage.push_back(std::pair<std::string, 
                   std::vector<std::string>>("obstype", obstype));
